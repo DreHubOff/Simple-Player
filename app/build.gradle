@@ -13,6 +13,7 @@ android {
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
+        multiDexEnabled true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -45,7 +46,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.2.0"
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.2.0"
     implementation "androidx.lifecycle:lifecycle-viewmodel-savedstate:2.2.0"
-    //kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
+    kapt "androidx.lifecycle:lifecycle-compiler:2.2.0"
     implementation "androidx.lifecycle:lifecycle-common-java8:2.2.0"
     implementation "androidx.lifecycle:lifecycle-service:2.2.0"
     implementation "androidx.lifecycle:lifecycle-process:2.2.0"
@@ -76,6 +77,8 @@ dependencies {
     //Fetch
     implementation "androidx.tonyodev.fetch2:xfetch2:3.1.5"
     implementation "androidx.tonyodev.fetch2rx:xfetch2rx:3.1.5"
+
+    implementation 'com.android.support:multidex:1.0.3'
 
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'

@@ -5,7 +5,9 @@
     android:id="@+id/films_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/main_background"
     android:padding="5dp"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+    app:spanCount="2"
     tools:context=".MainActivity"
     tools:listitem="@layout/film_item" />

@@ -77,6 +77,9 @@ dependencies {
     //Fetch
     implementation "androidx.tonyodev.fetch2:xfetch2:3.1.5"
     implementation "androidx.tonyodev.fetch2rx:xfetch2rx:3.1.5"
+    //Glide
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
 
     implementation 'com.android.support:multidex:1.0.3'
 

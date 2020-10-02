@@ -5,5 +5,5 @@ import io.reactivex.Single
 
 interface AppRepository {
     fun getAllItems(): Single<List<Film>>
-    fun getFilmById(id: Int): Single<Film>
+    fun getFilmById(id: Int): Single<List<Film>>
 }

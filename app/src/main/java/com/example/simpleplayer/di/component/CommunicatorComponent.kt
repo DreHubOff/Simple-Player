@@ -10,5 +10,5 @@ import dagger.Component
 @CommunicatorScope
 @Component(modules = [CommunicatorModule::class])
 interface CommunicatorComponent {
-    val communicator: CommunicatorImpl
+    val communicator: Communicator
 }

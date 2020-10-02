@@ -30,6 +30,6 @@ class DemoFilmApi {
         )
 
     fun getFilmNameList(): Single<Map<String, String>> {
-        return Single.just(filmNameList).delay(500, TimeUnit.MILLISECONDS)
+        return Single.just(filmNameList)
     }
 }

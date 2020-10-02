@@ -15,13 +15,15 @@ fun ServerRequestModel.toFilmEntity() =
         filmUrl = filmURL
     )
 
-fun FilmEntity.toFilm() =
-    Film(
+fun FilmEntity.toFilm() : Film{
+    val film = Film(
         id = _ID,
         title = title,
         filmURL = Uri.parse(filmUrl),
-        filmFileLink = Uri.parse(filmFileLink),
         rating = rating,
         posterUri = Uri.parse(posterUrl)
     )
+    return film
+}
+
 

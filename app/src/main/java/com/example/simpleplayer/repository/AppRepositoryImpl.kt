@@ -19,7 +19,7 @@ class AppRepositoryImpl @Inject constructor(
         return database.getFilmDao().selectAll().flatMap { filmDbList ->
             if (filmDbList.isNullOrEmpty()) {
                 addListToDB(communicator.getFilmsList())
-
+                println("AppRepositoryImpl")
                 return@flatMap database.getFilmDao().selectAll().map { entities ->
                     entities.map {
                         it.toFilm()
@@ -34,14 +34,15 @@ class AppRepositoryImpl @Inject constructor(
     }
 
     @SuppressLint("CheckResult")
-    override fun getFilmById(id: Int): Single<Film> {
+    override fun getFilmById(id: Int): Single<List<Film>> {
         return database.getFilmDao().getFilmById(id = id).flatMap {
-            Single.just(it.toFilm())
+            Single.just(listOf(it.toFilm()))
         }
     }
 
     private fun addListToDB(serverRequest: List<ServerRequestModel>) {
-        database.getFilmDao().insertAll(serverRequest.map{
+        println(serverRequest)
+        database.getFilmDao().insertAll(serverRequest.map {
             it.toFilmEntity()
         })
     }

@@ -4,5 +4,7 @@ import android.net.Uri
 
 class FilmItem(
     title: String,
+    id: Int,
+    val rating: Double,
     val posterUri: Uri
-): Film(title)
+) : Film(title = title, id = id)

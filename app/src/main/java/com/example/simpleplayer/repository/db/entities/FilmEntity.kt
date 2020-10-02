@@ -6,14 +6,17 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "films")
 data class FilmEntity(
-    @PrimaryKey(autoGenerate = true)
-    val _ID: Int,
     @ColumnInfo(name = "title")
     val title: String,
-    @ColumnInfo(name = "background_image_url")
-    val backgroundImageURL: String,
+    @ColumnInfo(name = "rating")
+    val rating: Double,
+    @ColumnInfo(name = "poster_url")
+    val posterUrl: String,
     @ColumnInfo(name = "film_url")
-    val filmURL: String,
+    val filmUrl: String,
+
+    @PrimaryKey(autoGenerate = true)
+    val _ID: Int = 0,
     @ColumnInfo(name = "offline_viewing")
     val offlineViewing: Boolean = false,
     @ColumnInfo(name = "film_file_link")

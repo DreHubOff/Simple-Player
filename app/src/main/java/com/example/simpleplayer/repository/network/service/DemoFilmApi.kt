@@ -3,7 +3,7 @@ package com.example.simpleplayer.repository.network.service
 import io.reactivex.Single
 import java.util.concurrent.TimeUnit
 
-object DemoFilmApi {
+class DemoFilmApi {
 
     // I could not find a normal service for getting links to files
 

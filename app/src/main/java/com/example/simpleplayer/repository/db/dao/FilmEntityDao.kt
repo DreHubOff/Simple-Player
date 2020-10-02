@@ -9,7 +9,7 @@ import io.reactivex.Single
 interface FilmEntityDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertSingle(film: FilmEntity)
+    fun insertAll(filmsList: List<FilmEntity>)
 
     @Query("SELECT * FROM films")
     fun selectAll(): Single<List<FilmEntity>>

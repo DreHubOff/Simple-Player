@@ -1,10 +1,12 @@
 package com.example.simpleplayer.model
 
-import android.icu.text.CaseMap
+import android.net.Uri
 
-class FilmInfo(
+
+class FilmInfo @JvmOverloads constructor(
     title: String,
-    val filmURL: String,
+    id: Int,
+    val filmURL: Uri,
     val offlineViewing: Boolean = false,
-    val filmFileLink: String? = null
-) : Film(title)
+    val filmFileLink: Uri? = null
+) : Film(title = title,id = id)

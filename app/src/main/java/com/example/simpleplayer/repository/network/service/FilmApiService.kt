@@ -1,6 +1,6 @@
 package com.example.simpleplayer.repository.network.service
 
-import com.example.simpleplayer.BuildConfig
+import androidx.multidex.BuildConfig
 import com.example.simpleplayer.repository.network.model.RequestModel
 import io.reactivex.Single
 import okhttp3.OkHttpClient

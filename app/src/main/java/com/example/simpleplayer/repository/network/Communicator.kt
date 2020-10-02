@@ -1,8 +1,7 @@
 package com.example.simpleplayer.repository.network
 
-import com.example.simpleplayer.repository.network.model.SearchResult
+import com.example.simpleplayer.repository.network.model.ServerRequestModel
 
 interface Communicator {
-    fun getFilmsList(): List<SearchResult>
-    fun getFilmUrlByName(name: String): String?
+    fun getFilmsList(): List<ServerRequestModel>
 }

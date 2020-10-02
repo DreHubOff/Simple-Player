@@ -1,15 +1,12 @@
 package com.example.simpleplayer.repository
 
 import android.annotation.SuppressLint
-import com.example.simpleplayer.model.FilmInfo
-import com.example.simpleplayer.model.FilmItem
+import com.example.simpleplayer.model.Film
 import com.example.simpleplayer.repository.db.FilmDataBase
 import com.example.simpleplayer.repository.network.Communicator
-import com.example.simpleplayer.repository.network.model.SearchResult
-import com.example.simpleplayer.repository.network.service.START_POSTER_URL
+import com.example.simpleplayer.repository.network.model.ServerRequestModel
+import com.example.simpleplayer.utils.toFilm
 import com.example.simpleplayer.utils.toFilmEntity
-import com.example.simpleplayer.utils.toFilmInfo
-import com.example.simpleplayer.utils.toFilmItem
 import io.reactivex.Single
 import javax.inject.Inject
 
@@ -18,42 +15,37 @@ class AppRepositoryImpl @Inject constructor(
     val communicator: Communicator
 ) : AppRepository {
 
-    override fun getAllItems(): Single<List<FilmItem>> {
+    override fun getAllItems(): Single<List<Film>> {
         return database.getFilmDao().selectAll().flatMap { filmDbList ->
             if (filmDbList.isNullOrEmpty()) {
-
                 addListToDB(communicator.getFilmsList())
 
-                database.getFilmDao().selectAll().map { entities ->
+                return@flatMap database.getFilmDao().selectAll().map { entities ->
                     entities.map {
-                        it.toFilmItem()
+                        it.toFilm()
                     }
                 }
             } else {
-                Single.just(filmDbList.map {
-                    it.toFilmItem()
+                return@flatMap Single.just(filmDbList.map {
+                    it.toFilm()
                 })
             }
         }
     }
 
     @SuppressLint("CheckResult")
-    override fun getFilmById(id: Int): Single<FilmInfo> {
+    override fun getFilmById(id: Int): Single<Film> {
         return database.getFilmDao().getFilmById(id = id).flatMap {
-            Single.just(it.toFilmInfo())
+            Single.just(it.toFilm())
         }
     }
 
-    private fun addListToDB(searchResults: List<SearchResult>) {
-        database.getFilmDao().insertAll(
-            searchResults.map { searchResult ->
-                searchResult.toFilmEntity(
-                    filmUrl = communicator.getFilmUrlByName(searchResult.title) ?: "",
-                    startPosterUrl = START_POSTER_URL
-                )
-            }
-        )
+    private fun addListToDB(serverRequest: List<ServerRequestModel>) {
+        database.getFilmDao().insertAll(serverRequest.map{
+            it.toFilmEntity()
+        })
     }
 
-
 }
+
+

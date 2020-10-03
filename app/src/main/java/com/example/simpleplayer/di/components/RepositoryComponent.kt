@@ -1,9 +1,8 @@
-package com.example.simpleplayer.di.component
+package com.example.simpleplayer.di.components
 
-import com.example.simpleplayer.di.module.RepositoryModule
-import com.example.simpleplayer.di.scope.RepositoryScope
+import com.example.simpleplayer.di.modules.RepositoryModule
+import com.example.simpleplayer.di.scopes.RepositoryScope
 import com.example.simpleplayer.repository.AppRepository
-import com.example.simpleplayer.repository.db.FilmDataBase
 import dagger.Component
 
 @RepositoryScope

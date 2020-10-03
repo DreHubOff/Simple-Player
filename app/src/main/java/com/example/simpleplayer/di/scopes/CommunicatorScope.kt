@@ -1,6 +1,5 @@
-package com.example.simpleplayer.di.scope
+package com.example.simpleplayer.di.scopes
 
-import java.lang.annotation.RetentionPolicy
 import javax.inject.Scope
 
 @Scope

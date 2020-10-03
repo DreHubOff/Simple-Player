@@ -47,6 +47,12 @@ class AppRepositoryImpl @Inject constructor(
         })
     }
 
+    override fun updateFilmModel(film: Film) {
+        film.toFilmEntity().apply {
+            database.getFilmDao().updateSingle(offlineViewing,filmFileLink?:"",_ID)
+        }
+    }
+
 }
 
 

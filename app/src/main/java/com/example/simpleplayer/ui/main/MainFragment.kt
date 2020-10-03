@@ -1,6 +1,7 @@
 package com.example.simpleplayer.ui.main
 
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -10,14 +11,22 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
+import com.example.simpleplayer.MainActivity
 import com.example.simpleplayer.R
+import com.example.simpleplayer.ui.film.PlayerFragment
 import kotlinx.android.synthetic.main.main_fragment.*
+import kotlinx.android.synthetic.main.player_fragment.*
 import javax.inject.Inject
 
-class MainFragment : Fragment() {
+class MainFragment : Fragment(), MainActivity.BeckPressedHelper {
 
     companion object {
-        fun newInstance() = MainFragment()
+        private var instance: MainFragment? = null
+        fun getInstance() =
+            instance ?: let {
+                instance = MainFragment()
+                instance!!
+            }
     }
 
     @Inject
@@ -27,6 +36,7 @@ class MainFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        (activity as MainActivity).let { it.backPressedHelper = this }
         (context.applicationContext as App).mainViewModelComponent.inject(this)
     }
 
@@ -43,6 +53,7 @@ class MainFragment : Fragment() {
         films_list.adapter = viewModel.listAdapter
         viewModel.liveData.observe(viewLifecycleOwner, createObserver())
         viewModel.setupDataOnView()
+        activity?.let { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
     }
 
     private fun createObserver() = Observer { response: MainViewModel.Response ->
@@ -53,8 +64,17 @@ class MainFragment : Fragment() {
                     response.errorMsg,
                     Toast.LENGTH_SHORT
                 ).show()
+
+            is MainViewModel.Response.ActionItemClick ->
+                activity?.supportFragmentManager?.beginTransaction()
+                    ?.replace(R.id.main_container, PlayerFragment.getInstance(response.film))
+                    ?.commit()
         }
 
+    }
+
+    override fun backPressed() {
+        activity?.finish()
     }
 
 

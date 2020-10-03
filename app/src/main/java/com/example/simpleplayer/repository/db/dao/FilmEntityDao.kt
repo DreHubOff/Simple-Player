@@ -1,9 +1,6 @@
 package com.example.simpleplayer.repository.db.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.simpleplayer.repository.db.entities.FilmEntity
 import io.reactivex.Single
 
@@ -18,4 +15,7 @@ interface FilmEntityDao {
 
     @Query("SELECT * FROM films WHERE _ID =:id")
     fun getFilmById(id: Int): Single<FilmEntity>
+
+    @Query("UPDATE films SET offline_viewing =:offlineViewing, film_file_link=:filmFileLink WHERE _ID =:id")
+    fun updateSingle(offlineViewing: Boolean, filmFileLink: String, id: Int)
 }

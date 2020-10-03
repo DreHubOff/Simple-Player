@@ -1,27 +1,29 @@
 package com.example.simpleplayer
 
-import android.content.pm.ActivityInfo
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.WindowManager
 import com.example.simpleplayer.ui.main.MainFragment
 
 class MainActivity : AppCompatActivity() {
 
+    interface BeckPressedHelper{
+        fun backPressed()
+    }
+
+    var backPressedHelper: BeckPressedHelper? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.main_activity)
-        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
-                .replace(R.id.main_container, MainFragment.newInstance())
+                .replace(R.id.main_container, MainFragment.getInstance())
                 .commitNow()
         }
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        TODO()
+        backPressedHelper?.backPressed()
     }
 }

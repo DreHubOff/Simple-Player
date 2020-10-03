@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Simple Player</string>
     <string name="error_interactor_get_data">"Oops!\nCan't get data"</string>
+    <string name="offline_text">Offline</string>
+    <string name="online_text">Online</string>
 </resources>

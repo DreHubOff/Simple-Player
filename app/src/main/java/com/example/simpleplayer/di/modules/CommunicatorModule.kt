@@ -1,6 +1,6 @@
-package com.example.simpleplayer.di.module
+package com.example.simpleplayer.di.modules
 
-import com.example.simpleplayer.di.scope.CommunicatorScope
+import com.example.simpleplayer.di.scopes.CommunicatorScope
 import com.example.simpleplayer.repository.network.Communicator
 import com.example.simpleplayer.repository.network.CommunicatorImpl
 import com.example.simpleplayer.repository.network.service.DemoFilmApi

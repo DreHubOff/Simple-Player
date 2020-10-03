@@ -74,6 +74,9 @@ dependencies {
     implementation "com.google.dagger:dagger:2.28.3"
     //ExoPlayer
     implementation 'com.google.android.exoplayer:exoplayer:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.0'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.12.0'
     //Fetch
     implementation "androidx.tonyodev.fetch2:xfetch2:3.1.5"
     implementation "androidx.tonyodev.fetch2rx:xfetch2rx:3.1.5"

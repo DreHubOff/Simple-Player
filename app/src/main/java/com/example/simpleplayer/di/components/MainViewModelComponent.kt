@@ -1,8 +1,7 @@
-package com.example.simpleplayer.di.component
+package com.example.simpleplayer.di.components
 
-import android.app.Application
-import com.example.simpleplayer.di.module.MainViewModelModule
-import com.example.simpleplayer.di.scope.MainViewModelScope
+import com.example.simpleplayer.di.modules.MainViewModelModule
+import com.example.simpleplayer.di.scopes.MainViewModelScope
 import com.example.simpleplayer.ui.main.MainFragment
 import dagger.Component
 

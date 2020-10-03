@@ -1,18 +1,16 @@
 package com.example.simpleplayer
 
 import android.app.Application
-import com.example.simpleplayer.di.component.*
-import com.example.simpleplayer.di.module.CommunicatorModule
-import com.example.simpleplayer.di.module.InteractorModule
-import com.example.simpleplayer.di.module.MainViewModelModule
-import com.example.simpleplayer.di.module.RepositoryModule
+import com.example.simpleplayer.di.components.*
+import com.example.simpleplayer.di.modules.*
 import com.example.simpleplayer.repository.db.FilmDataBase
 
 class App : Application() {
 
     private lateinit var filmsDataBase: FilmDataBase
     lateinit var mainViewModelComponent: MainViewModelComponent
-    private set
+    lateinit var playerViewModelComponent: PlayerViewModelComponent
+        private set
 
     override fun onCreate() {
         super.onCreate()
@@ -39,6 +37,12 @@ class App : Application() {
         mainViewModelComponent = DaggerMainViewModelComponent.builder()
             .interactorComponent(interactorComponent)
             .mainViewModelModule(MainViewModelModule(this))
+            .build()
+
+        playerViewModelComponent = DaggerPlayerViewModelComponent.builder()
+            .interactorComponent(interactorComponent)
+            .fetchModule(FetchModule(this))
+            .playerViewModelModule(PlayerViewModelModule(this))
             .build()
 
     }

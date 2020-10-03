@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "films")
-data class FilmEntity(
+data class FilmEntity @JvmOverloads constructor(
     @ColumnInfo(name = "title")
     val title: String,
     @ColumnInfo(name = "rating")

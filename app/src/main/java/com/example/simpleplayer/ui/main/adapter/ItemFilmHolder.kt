@@ -1,9 +1,12 @@
 package com.example.simpleplayer.ui.main.adapter
 
 import android.annotation.SuppressLint
+import android.transition.Fade
+import android.transition.Transition
 import android.view.View
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.bumptech.glide.TransitionOptions
 import com.example.simpleplayer.model.Film
 import kotlinx.android.synthetic.main.film_item.view.*
 

@@ -2,27 +2,25 @@ package com.example.simpleplayer.interactor
 
 import android.annotation.SuppressLint
 import com.example.simpleplayer.R
-import com.example.simpleplayer.interactor.interfaces.MainInteractor
+import com.example.simpleplayer.interactor.interfaces.Interactor
 import com.example.simpleplayer.model.Film
 import com.example.simpleplayer.repository.AppRepository
-import io.reactivex.Scheduler
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
-import okhttp3.Response
 import javax.inject.Inject
 
-class MainInteractorImpl @Inject constructor(val repository: AppRepository) : MainInteractor {
+class InteractorImpl @Inject constructor(val repository: AppRepository) : Interactor {
 
-    private val errorData = MainInteractor.Response.Error(R.string.error_interactor_get_data)
+    private val errorData = Interactor.Response.Error(R.string.error_interactor_get_data)
 
     @SuppressLint("CheckResult")
-    override fun getFilmList(): Single<MainInteractor.Response> {
+    override fun getFilmList(): Single<Interactor.Response> {
         return repository.getAllItems()
             .doOnError { errorData }
             .map {
                 if (it.isNotEmpty()) {
-                    MainInteractor.Response.Success(it)
+                    Interactor.Response.Success(it)
                 } else {
                     errorData
                 }
@@ -31,16 +29,20 @@ class MainInteractorImpl @Inject constructor(val repository: AppRepository) : Ma
             .observeOn(AndroidSchedulers.mainThread())
     }
 
-    override fun getFilmById(id: Int): Single<MainInteractor.Response> {
+    override fun getFilmById(id: Int): Single<Interactor.Response> {
         return repository.getFilmById(id)
             .doOnError { errorData }
             .map {
                 if (it.isNullOrEmpty() || it.size > 1) {
                     errorData
                 } else {
-                    MainInteractor.Response.Success(it)
+                    Interactor.Response.Success(it)
                 }
             }
+    }
+
+    override fun updateFilmModel(film: Film) {
+        repository.updateFilmModel(film)
     }
 
 

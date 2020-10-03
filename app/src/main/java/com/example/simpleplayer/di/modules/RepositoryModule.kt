@@ -1,6 +1,6 @@
-package com.example.simpleplayer.di.module
+package com.example.simpleplayer.di.modules
 
-import com.example.simpleplayer.di.scope.RepositoryScope
+import com.example.simpleplayer.di.scopes.RepositoryScope
 import com.example.simpleplayer.repository.AppRepository
 import com.example.simpleplayer.repository.AppRepositoryImpl
 import com.example.simpleplayer.repository.db.FilmDataBase

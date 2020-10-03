@@ -14,7 +14,7 @@ class FetchModule(val app: Application) {
     @Provides
     internal fun provideFetchConfiguration(): FetchConfiguration {
         return FetchConfiguration.Builder(app.applicationContext)
-            .setDownloadConcurrentLimit(10)
+            .setDownloadConcurrentLimit(3)
             .build()
     }
 

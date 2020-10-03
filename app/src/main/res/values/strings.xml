@@ -3,4 +3,7 @@
     <string name="error_interactor_get_data">"Oops!\nCan't get data"</string>
     <string name="offline_text">Offline</string>
     <string name="online_text">Online</string>
+    <string name="download_error">Oops! Can not download</string>
+    <string name="downloading">Downloading…</string>
+    <string name="downloading_success">Downloading success</string>
 </resources>

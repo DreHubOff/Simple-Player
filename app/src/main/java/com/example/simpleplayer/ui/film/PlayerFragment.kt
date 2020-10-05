@@ -37,11 +37,13 @@ class PlayerFragment : Fragment(), MainActivity.BeckPressedHelper {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (activity as MainActivity).let {
-            it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            it.backPressedHelper = this
+        if (context is MainActivity) {
+            context.apply {
+                requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+                backPressedHelper = this@PlayerFragment
+                (applicationContext as App).playerViewModelComponent.inject(this@PlayerFragment)
+            }
         }
-        (context.applicationContext as App).playerViewModelComponent.inject(this)
     }
 
     override fun onCreateView(
@@ -54,19 +56,20 @@ class PlayerFragment : Fragment(), MainActivity.BeckPressedHelper {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel = ViewModelProvider(this, playerFactory).get(PlayerViewModel::class.java)
-        viewModel.liveData.observe(viewLifecycleOwner, createObserver())
-        viewModel.cratePlayer(currentFilm)
+        viewModel = ViewModelProvider(
+            this@PlayerFragment,
+            playerFactory
+        ).get(PlayerViewModel::class.java).apply {
+            liveData.observe(viewLifecycleOwner, createObserver())
+            cratePlayer(currentFilm)
+        }
 
         online_offline_text.text =
             if (currentFilm.offlineViewing) getString(R.string.offline_text)
             else getString(R.string.online_text)
 
         offline_watching_root.setOnClickListener {
-            viewModel.updateFilm(
-                currentFilm,
-                online_offline_text.text.toString()
-            )
+            viewModel.updateFilm(currentFilm, online_offline_text.text.toString())
         }
     }
 
@@ -87,8 +90,6 @@ class PlayerFragment : Fragment(), MainActivity.BeckPressedHelper {
                 if (response.text == getString(R.string.offline_text))
                     showToast(getString(R.string.downloading))
             }
-            is PlayerViewModel.Response.DownloadError ->
-                showToast(response.errorMsg)
             is PlayerViewModel.Response.DownloadSuccess ->
                 showToast(getString(R.string.downloading_success))
         }

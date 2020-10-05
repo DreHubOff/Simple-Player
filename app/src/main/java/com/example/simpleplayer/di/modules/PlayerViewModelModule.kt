@@ -2,7 +2,7 @@ package com.example.simpleplayer.di.modules
 
 import android.app.Application
 import com.example.simpleplayer.di.scopes.PlayerViewModelScope
-import com.example.simpleplayer.interactor.interfaces.Interactor
+import com.example.simpleplayer.interactor.interfaces.FilmInteractor
 import com.example.simpleplayer.ui.film.PlayerFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
@@ -17,11 +17,17 @@ class PlayerViewModelModule(val app: Application) {
     @PlayerViewModelScope
     @Provides
     internal fun providePlayer(): ExoPlayer {
-        return SimpleExoPlayer.Builder(app.applicationContext).build()
+        return SimpleExoPlayer.Builder(app.applicationContext).build().apply {
+            setForegroundMode(false)
+        }
     }
 
     @PlayerViewModelScope
     @Provides
-    internal fun providePlayerFactory(interactor: Interactor, player: ExoPlayer, fetch: Fetch) =
-        PlayerFactory(app, interactor, player, fetch)
+    internal fun providePlayerFactory(
+        filmInteractor: FilmInteractor,
+        player: ExoPlayer,
+        fetch: Fetch
+    ) =
+        PlayerFactory(app, filmInteractor, player, fetch)
 }

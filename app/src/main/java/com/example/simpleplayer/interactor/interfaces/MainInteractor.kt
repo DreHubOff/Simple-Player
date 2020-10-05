@@ -3,7 +3,7 @@ package com.example.simpleplayer.interactor.interfaces
 import com.example.simpleplayer.model.Film
 import io.reactivex.Single
 
-interface Interactor {
+interface MainInteractor {
 
     sealed class Response{
         class Success(val filmList: List<Film>): Response()
@@ -13,5 +13,4 @@ interface Interactor {
 
     fun getFilmList(): Single<Response>
     fun getFilmById(id: Int): Single<Response>
-    fun updateFilmModel(film: Film)
 }

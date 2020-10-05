@@ -31,7 +31,8 @@ class App : Application() {
 
         val interactorComponent = DaggerInteractorComponent.builder()
             .repositoryComponent(repositoryComponent)
-            .interactorModule(InteractorModule())
+            .mainInteractorModule(MainInteractorModule())
+            .filmInteractorModule(FilmInteractorModule())
             .build()
 
         mainViewModelComponent = DaggerMainViewModelComponent.builder()

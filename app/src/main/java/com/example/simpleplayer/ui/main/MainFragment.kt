@@ -3,11 +3,13 @@ package com.example.simpleplayer.ui.main
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
+import android.transition.Fade
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
@@ -66,9 +68,13 @@ class MainFragment : Fragment(), MainActivity.BeckPressedHelper {
                 ).show()
 
             is MainViewModel.Response.ActionItemClick ->
-                activity?.supportFragmentManager?.beginTransaction()
-                    ?.replace(R.id.main_container, PlayerFragment.getInstance(response.film))
-                    ?.commit()
+                activity?.run {
+                    (this as MainActivity).mainFragmentExit = true
+                    supportFragmentManager.beginTransaction()
+                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
+                        .replace(R.id.main_container, PlayerFragment.getInstance(response.film))
+                        .commit()
+                }
         }
 
     }

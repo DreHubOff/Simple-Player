@@ -11,4 +11,4 @@ by a green developer with no commercial experience!
 
 The application has 2 screens. 
 The first is a list with popular films:
-![alt text](/app/src/main/res/drawable/Screenshot_20201013_203354_com.example.simpleplayer.jpg "Popular films list screen")
+![alt text](/app/src/main/res/drawable/screenshot_list_screen.jpg "Popular films list screen")

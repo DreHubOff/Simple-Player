@@ -12,3 +12,7 @@ by a green developer with no commercial experience!
 The application has 2 screens. 
 The first is a list with popular films:
 ![alt text](/app/src/main/res/drawable/screenshot_list_screen.jpg "Popular films list screen")
+
+The second screen allows you to view the trailer 
+in the selected movie and cache the video material.
+![alt text](/app/src/main/res/drawable/screenshot_player_screen.jpg "Player screen")

@@ -3,21 +3,18 @@ package com.example.simpleplayer.ui.main
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
-import android.transition.Fade
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.fragment.app.FragmentTransaction
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
 import com.example.simpleplayer.MainActivity
 import com.example.simpleplayer.R
-import com.example.simpleplayer.ui.film.PlayerFragment
+import com.example.simpleplayer.ui.film.PlayerActivity
 import kotlinx.android.synthetic.main.main_fragment.*
-import kotlinx.android.synthetic.main.player_fragment.*
 import javax.inject.Inject
 
 class MainFragment : Fragment(), MainActivity.BeckPressedHelper {
@@ -69,11 +66,7 @@ class MainFragment : Fragment(), MainActivity.BeckPressedHelper {
 
             is MainViewModel.Response.ActionItemClick ->
                 activity?.run {
-                    (this as MainActivity).mainFragmentExit = true
-                    supportFragmentManager.beginTransaction()
-                        .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
-                        .replace(R.id.main_container, PlayerFragment.getInstance(response.film))
-                        .commit()
+                    PlayerActivity.startPlayerActivity(this, response.film)
                 }
         }
 

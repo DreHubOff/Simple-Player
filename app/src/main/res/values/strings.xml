@@ -6,4 +6,7 @@
     <string name="download_error">Oops! Can not download</string>
     <string name="downloading">Downloading…</string>
     <string name="downloading_success">Downloading success</string>
+    <string name="ic_rewind">icon rewind</string>
+    <string name="ic_play">icon play</string>
+    <string name="ic_forward">icon forward</string>
 </resources>

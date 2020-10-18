@@ -2,11 +2,9 @@ package com.example.simpleplayer.ui.film
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.MutableLiveData
 import com.example.simpleplayer.R
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
-import com.example.simpleplayer.interactor.interfaces.MainInteractor
 import com.example.simpleplayer.model.Film
 import com.example.simpleplayer.utils.changeFilmFileLink
 import com.example.simpleplayer.utils.changeOfflineViewingState
@@ -54,7 +52,7 @@ class PlayerViewModel(
             file.mkdirs()
         }
 
-        if (viewingState == app.getString(R.string.online_text)) {
+        if (viewingState == app.getString(R.string.download_text)) {
 
             val request = Request(film.filmURL.toString(), filePath)
             request.priority = Priority.HIGH
@@ -82,7 +80,7 @@ class PlayerViewModel(
         } else {
             file.delete()
             mainInteractor.updateFilmModel(film.changeOfflineViewingState(false))
-            liveData.value = Response.SetViewingText(app.getString(R.string.online_text))
+            liveData.value = Response.SetViewingText(app.getString(R.string.download_text))
         }
     }
 }

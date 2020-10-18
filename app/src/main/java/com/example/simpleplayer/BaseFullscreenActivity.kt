@@ -10,13 +10,15 @@ import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_player.*
 
 private const val AUTO_HIDE = true
-private const val AUTO_HIDE_DELAY_MILLIS = 5000
-private const val UI_ANIMATION_DELAY = 300
+private const val AUTO_HIDE_DELAY_MILLIS = 3000
+private const val UI_ANIMATION_DELAY = 20
 
 @Suppress("DEPRECATION")
-open class BaseFullscreenActivity: AppCompatActivity() {
+abstract class BaseFullscreenActivity: AppCompatActivity() {
 
     private var isFullscreen: Boolean = false
+
+    protected var fullscreenView: View? = null
 
     private val hideHandler = Handler()
 
@@ -55,8 +57,7 @@ open class BaseFullscreenActivity: AppCompatActivity() {
 
     private fun show() {
         // Show the system bar
-        println("show()")
-        fullscreen_content.systemUiVisibility =
+        fullscreenView?.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
         isFullscreen = true
@@ -73,7 +74,7 @@ open class BaseFullscreenActivity: AppCompatActivity() {
 
     @SuppressLint("InlinedApi")
     private val hidePart2Runnable = Runnable {
-        fullscreen_content.systemUiVisibility =
+        fullscreenView?.systemUiVisibility =
             View.SYSTEM_UI_FLAG_LOW_PROFILE or
                     View.SYSTEM_UI_FLAG_FULLSCREEN or
                     View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
@@ -93,7 +94,7 @@ open class BaseFullscreenActivity: AppCompatActivity() {
         // Trigger the initial hide() shortly after the activity has been
         // created, to briefly hint to the user that UI controls
         // are available.
-        delayedHide(100)
+        delayedHide(AUTO_HIDE_DELAY_MILLIS)
     }
 
     private fun delayedHide(delayMillis: Int) {

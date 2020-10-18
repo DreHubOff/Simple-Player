@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/exoplayer_view_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.film.PlayerActivity">
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/exoplayer_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        app:controller_layout_id="@layout/player_controller"
+        app:fastforward_increment="10000"
+        app:hide_on_touch="true"
+        app:auto_show="true"
+        app:show_timeout="3000"
+        app:resize_mode="fit"
+        app:rewind_increment="10000"
+        app:use_controller="true" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,13 +1,9 @@
 package com.example.simpleplayer.ui.film
 
-import androidx.appcompat.app.AppCompatActivity
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.Handler
-import android.view.MotionEvent
-import android.view.View
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -16,8 +12,8 @@ import com.example.simpleplayer.BaseFullscreenActivity
 import com.example.simpleplayer.R
 import com.example.simpleplayer.model.Film
 import kotlinx.android.synthetic.main.activity_player.*
-import kotlinx.android.synthetic.main.activity_player.offline_watching_root
-import kotlinx.android.synthetic.main.activity_player.online_offline_text
+import kotlinx.android.synthetic.main.player_controller.*
+import kotlinx.android.synthetic.main.player_controller.view.*
 import javax.inject.Inject
 
 @Suppress("DEPRECATION")
@@ -35,27 +31,47 @@ class PlayerActivity : BaseFullscreenActivity() {
         setContentView(R.layout.activity_player)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        super.fullscreenView = exoplayer_view_root
+
         (application as App).playerViewModelComponent.inject(this@PlayerActivity)
 
-        viewModel = ViewModelProvider(
-            this@PlayerActivity,
-            playerFactory
-        ).get(PlayerViewModel::class.java).apply {
-            liveData.observe(this@PlayerActivity, createObserver())
-            currentFilm?.let { cratePlayer(it) }
-        }
+        viewModel = ViewModelProvider(this@PlayerActivity, playerFactory)
+            .get(PlayerViewModel::class.java)
+        viewModel.liveData.observe(this@PlayerActivity, createObserver())
 
-        online_offline_text.text =
-            if (currentFilm?.offlineViewing == true) getString(R.string.offline_text)
-            else getString(R.string.online_text)
+        // setup film in view
+        currentFilm?.let {
+            viewModel.cratePlayer(it)
+            if (it.offlineViewing) {
+                setupCashingField(CASHING_STATUS_OFFLINE)
+            } else {
+                setupCashingField(CASHING_STATUS_DOWNLOAD)
+            }
+        }
 
         offline_watching_root.setOnClickListener {
             currentFilm?.let {
-                viewModel.updateFilm(it, online_offline_text.text.toString())
+                viewModel.updateFilm(it, download_offline_text.text.toString())
             }
         }
 
         exoplayer_view.setOnTouchListener(delayHideTouchListener)
+    }
+
+    private fun setupCashingField(status: Int) {
+        when (status) {
+            CASHING_STATUS_DOWNLOAD -> {
+                download_offline_text.text = getString(R.string.download_text)
+                download_offline_img.setImageResource(R.drawable.ic_download)
+                player_controller_root.exo_progress?.setBufferedColor(resources.getColor(R.color.buffered_color))
+            }
+            CASHING_STATUS_OFFLINE -> {
+                download_offline_text.text = getString(R.string.offline_text)
+                download_offline_img.setImageResource(R.drawable.ic_offline)
+                player_controller_root.exo_progress?.setBufferedColor(resources.getColor(R.color.player_but))
+            }
+        }
+
     }
 
     private fun createObserver() = Observer<PlayerViewModel.Response> { response ->
@@ -71,9 +87,12 @@ class PlayerActivity : BaseFullscreenActivity() {
                 }
             }
             is PlayerViewModel.Response.SetViewingText -> {
-                online_offline_text.text = response.text
-                if (response.text == getString(R.string.offline_text))
-                    Toast.makeText(this, R.string.downloading, Toast.LENGTH_SHORT).show()
+                download_offline_text.text = response.text
+                if (response.text == getString(R.string.offline_text)) {
+                    setupCashingField(CASHING_STATUS_OFFLINE)
+                } else if (response.text == getString(R.string.download_text)) {
+                    setupCashingField(CASHING_STATUS_DOWNLOAD)
+                }
             }
             is PlayerViewModel.Response.DownloadSuccess ->
                 Toast.makeText(this, R.string.downloading_success, Toast.LENGTH_SHORT).show()
@@ -85,11 +104,6 @@ class PlayerActivity : BaseFullscreenActivity() {
         exoplayer_view.player?.pause()
     }
 
-    override fun onBackPressed() {
-        super.onBackPressed()
-        exoplayer_view.player?.stop()
-    }
-
     companion object {
         fun startPlayerActivity(context: Context, film: Film) {
             currentFilm = film
@@ -98,5 +112,8 @@ class PlayerActivity : BaseFullscreenActivity() {
         }
 
         private var currentFilm: Film? = null
+
+        private const val CASHING_STATUS_DOWNLOAD = 0
+        private const val CASHING_STATUS_OFFLINE = 1
     }
 }

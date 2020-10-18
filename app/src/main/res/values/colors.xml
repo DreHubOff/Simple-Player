@@ -8,4 +8,9 @@
     <color name="title_color">#FFFFFF</color>
     <color name="text_black3f">#3F000000</color>
     <color name="blackE9">#e9000000</color>
+
+    <color name="black_overlay">#66000000</color>
+    <color name="player_but">#7694B0</color>
+    <color name="red">#FF0000</color>
+    <color name="buffered_color">#959595</color>
 </resources>

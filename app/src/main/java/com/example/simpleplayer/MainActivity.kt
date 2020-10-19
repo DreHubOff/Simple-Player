@@ -20,24 +20,12 @@ class MainActivity : AppCompatActivity() {
     @Suppress("DEPRECATION")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (savedInstanceState != null) {
-            window.setFlags(
-                WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN
-            )
-        }else{
-           //
-        }
         setContentView(R.layout.main_activity)
 
         if (savedInstanceState == null) {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, MainFragment.getInstance())
                 .commitNow()
-            window.setFlags(
-                WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW,
-                WindowManager.LayoutParams.FIRST_APPLICATION_WINDOW
-            )
         }
 
     }

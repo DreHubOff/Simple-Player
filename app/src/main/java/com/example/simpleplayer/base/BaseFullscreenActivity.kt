@@ -1,4 +1,4 @@
-package com.example.simpleplayer
+package com.example.simpleplayer.base
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -7,7 +7,6 @@ import android.os.PersistableBundle
 import android.view.MotionEvent
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_player.*
 
 private const val AUTO_HIDE = true
 private const val AUTO_HIDE_DELAY_MILLIS = 3000

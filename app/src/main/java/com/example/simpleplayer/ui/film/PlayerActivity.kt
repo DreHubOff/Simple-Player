@@ -3,12 +3,13 @@ package com.example.simpleplayer.ui.film
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
-import com.example.simpleplayer.BaseFullscreenActivity
+import com.example.simpleplayer.base.BaseFullscreenActivity
 import com.example.simpleplayer.R
 import com.example.simpleplayer.model.Film
 import kotlinx.android.synthetic.main.activity_player.*
@@ -55,7 +56,21 @@ class PlayerActivity : BaseFullscreenActivity() {
             }
         }
 
+        fullscreen_but.setOnClickListener { changeScreenOrientation() }
+
         exoplayer_view.setOnTouchListener(delayHideTouchListener)
+    }
+
+    private fun changeScreenOrientation() {
+        if (isLendOrientation){
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            isLendOrientation = !isLendOrientation
+            fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
+        }else{
+            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+            isLendOrientation = !isLendOrientation
+            fullscreen_but.setImageResource(R.drawable.ic_fullscreen)
+        }
     }
 
     private fun setupCashingField(status: Int) {
@@ -99,6 +114,18 @@ class PlayerActivity : BaseFullscreenActivity() {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        isLendOrientation = if (exoplayer_view_root.width > exoplayer_view_root.height){
+            fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
+            true
+        }else{
+            fullscreen_but.setImageResource(R.drawable.ic_fullscreen)
+            false
+        }
+    }
+
+
     override fun onPause() {
         super.onPause()
         exoplayer_view.player?.pause()
@@ -112,6 +139,8 @@ class PlayerActivity : BaseFullscreenActivity() {
         }
 
         private var currentFilm: Film? = null
+
+        private var isLendOrientation = false
 
         private const val CASHING_STATUS_DOWNLOAD = 0
         private const val CASHING_STATUS_OFFLINE = 1

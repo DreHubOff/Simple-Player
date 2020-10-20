@@ -13,11 +13,10 @@ import javax.inject.Inject
 class PlayerFactory @Inject constructor(
     val app: Application,
     val filmInteractor: FilmInteractor,
-    val player: ExoPlayer,
     val fetch: Fetch
 ) : ViewModelProvider.AndroidViewModelFactory(app) {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return PlayerViewModel(app, filmInteractor, player, fetch) as T
+        return PlayerViewModel(app, filmInteractor, fetch) as T
     }
 }

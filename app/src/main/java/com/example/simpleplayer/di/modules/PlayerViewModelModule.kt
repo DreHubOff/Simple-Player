@@ -14,7 +14,6 @@ import dagger.Provides
 @Module(includes = [FetchModule::class])
 class PlayerViewModelModule(val app: Application) {
 
-    @PlayerViewModelScope
     @Provides
     internal fun providePlayer(): ExoPlayer {
         return SimpleExoPlayer.Builder(app.applicationContext).build().apply {
@@ -26,8 +25,7 @@ class PlayerViewModelModule(val app: Application) {
     @Provides
     internal fun providePlayerFactory(
         filmInteractor: FilmInteractor,
-        player: ExoPlayer,
         fetch: Fetch
     ) =
-        PlayerFactory(app, filmInteractor, player, fetch)
+        PlayerFactory(app, filmInteractor, fetch)
 }

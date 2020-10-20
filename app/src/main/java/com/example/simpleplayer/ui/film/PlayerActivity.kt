@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.res.Configuration
+import android.content.res.Configuration.*
+import android.graphics.Point
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -34,19 +37,30 @@ class PlayerActivity : BaseFullscreenActivity() {
 
         super.fullscreenView = exoplayer_view_root
 
+        // Setup dagger field
         (application as App).playerViewModelComponent.inject(this@PlayerActivity)
 
+        // Setup single viewModel
         viewModel = ViewModelProvider(this@PlayerActivity, playerFactory)
             .get(PlayerViewModel::class.java)
+
+        // Create observer for live data
         viewModel.liveData.observe(this@PlayerActivity, createObserver())
 
-        // setup film in view
-        currentFilm?.let {
-            viewModel.cratePlayer(it)
-            if (it.offlineViewing) {
-                setupCashingField(CASHING_STATUS_OFFLINE)
-            } else {
-                setupCashingField(CASHING_STATUS_DOWNLOAD)
+        // Check first creation
+        if (savedInstanceState == null) {
+            // Setup film in view
+            currentFilm?.let {
+                viewModel.cratePlayer(it, true)
+                if (it.offlineViewing) {
+                    setupCashingField(CASHING_STATUS_OFFLINE)
+                } else {
+                    setupCashingField(CASHING_STATUS_DOWNLOAD)
+                }
+            }
+        }else{
+            currentFilm?.let {
+                viewModel.cratePlayer(it)
             }
         }
 
@@ -62,15 +76,13 @@ class PlayerActivity : BaseFullscreenActivity() {
     }
 
     private fun changeScreenOrientation() {
-        if (isLendOrientation){
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-            isLendOrientation = !isLendOrientation
-            fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
-        }else{
-            requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            isLendOrientation = !isLendOrientation
-            fullscreen_but.setImageResource(R.drawable.ic_fullscreen)
+        requestedOrientation = if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
         }
+        // Start screen orientation status delay
+        viewModel.startScreenOrientationTimer(SCREEN_ORIENTATION_CHANGING_DELAY)
     }
 
     private fun setupCashingField(status: Int) {
@@ -91,8 +103,9 @@ class PlayerActivity : BaseFullscreenActivity() {
 
     private fun createObserver() = Observer<PlayerViewModel.Response> { response ->
         when (response) {
-            is PlayerViewModel.Response.Error ->
+            is PlayerViewModel.Response.Error -> {
                 Toast.makeText(this, response.errorMsg, Toast.LENGTH_SHORT).show()
+            }
             is PlayerViewModel.Response.StartPlayer -> {
                 player_film_title.text = currentFilm?.title ?: "Ooops"
                 response.player.apply {
@@ -109,22 +122,27 @@ class PlayerActivity : BaseFullscreenActivity() {
                     setupCashingField(CASHING_STATUS_DOWNLOAD)
                 }
             }
-            is PlayerViewModel.Response.DownloadSuccess ->
+            is PlayerViewModel.Response.DownloadSuccess -> {
                 Toast.makeText(this, R.string.downloading_success, Toast.LENGTH_SHORT).show()
+            }
+            is PlayerViewModel.Response.ChangeScreenOrientation -> {
+                requestedOrientation = response.orientationFlag
+            }
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-        isLendOrientation = if (exoplayer_view_root.width > exoplayer_view_root.height){
-            fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
-            true
-        }else{
-            fullscreen_but.setImageResource(R.drawable.ic_fullscreen)
-            false
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+
+        when (newConfig.orientation){
+            ORIENTATION_LANDSCAPE ->{
+                fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
+            }
+            ORIENTATION_PORTRAIT ->{
+                fullscreen_but.setImageResource(R.drawable.ic_fullscreen)
+            }
         }
     }
-
 
     override fun onPause() {
         super.onPause()
@@ -140,9 +158,9 @@ class PlayerActivity : BaseFullscreenActivity() {
 
         private var currentFilm: Film? = null
 
-        private var isLendOrientation = false
-
         private const val CASHING_STATUS_DOWNLOAD = 0
         private const val CASHING_STATUS_OFFLINE = 1
+
+        private const val SCREEN_ORIENTATION_CHANGING_DELAY = 10000L
     }
 }

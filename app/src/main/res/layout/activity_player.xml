@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".ui.film.PlayerActivity">
+    tools:context=".application.ui.film.PlayerActivity">
 
     <com.google.android.exoplayer2.ui.PlayerView
         android:id="@+id/exoplayer_view"

@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.film
+package com.example.simpleplayer.application.ui.film
 
 import android.app.Application
 import android.content.Intent
@@ -11,11 +11,9 @@ import com.example.simpleplayer.R
 import com.example.simpleplayer.application.services.DownloadService
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
 import com.example.simpleplayer.model.Film
-import com.example.simpleplayer.utils.changeFilmFileLink
 import com.example.simpleplayer.utils.changeOfflineViewingState
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
-import com.tonyodev.fetch2.*
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable

@@ -1,12 +1,9 @@
-package com.example.simpleplayer.ui.film
+package com.example.simpleplayer.application.ui.film
 
 import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
-import com.example.simpleplayer.interactor.interfaces.MainInteractor
-import com.google.android.exoplayer2.ExoPlayer
-import com.tonyodev.fetch2.Fetch
 import javax.inject.Inject
 
 @Suppress("UNCHECKED_CAST")

@@ -2,13 +2,7 @@ package com.example.simpleplayer.application.services
 
 import android.app.Service
 import android.content.Intent
-import android.net.Uri
 import android.os.IBinder
-import com.example.simpleplayer.R
-import com.example.simpleplayer.ui.film.MyFetchListener
-import com.example.simpleplayer.ui.film.PlayerViewModel
-import com.example.simpleplayer.utils.changeFilmFileLink
-import com.example.simpleplayer.utils.changeOfflineViewingState
 import com.tonyodev.fetch2.*
 import javax.inject.Inject
 

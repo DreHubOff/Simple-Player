@@ -9,5 +9,5 @@
     android:padding="3dp"
     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
     app:spanCount="2"
-    tools:context=".MainActivity"
+    tools:context=".application.ui.main.MainActivity"
     tools:listitem="@layout/film_item" />

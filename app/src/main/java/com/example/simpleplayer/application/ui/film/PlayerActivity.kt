@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.film
+package com.example.simpleplayer.application.ui.film
 
 import android.content.Context
 import android.content.Intent

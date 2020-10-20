@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.main.adapter
+package com.example.simpleplayer.application.adapters.main
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

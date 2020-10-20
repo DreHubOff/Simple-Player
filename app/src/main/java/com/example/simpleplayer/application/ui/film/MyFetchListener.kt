@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.film
+package com.example.simpleplayer.application.ui.film
 
 import com.tonyodev.fetch2.Download
 import com.tonyodev.fetch2.Error

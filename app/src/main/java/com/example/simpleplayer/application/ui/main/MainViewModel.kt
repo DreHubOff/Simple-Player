@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.main
+package com.example.simpleplayer.application.ui.main
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -7,8 +7,8 @@ import androidx.lifecycle.MutableLiveData
 import com.example.simpleplayer.R
 import com.example.simpleplayer.interactor.interfaces.MainInteractor
 import com.example.simpleplayer.model.Film
-import com.example.simpleplayer.ui.main.adapter.FilmListAdapter
-import com.example.simpleplayer.ui.main.adapter.ItemFilmHolder
+import com.example.simpleplayer.application.adapters.main.FilmListAdapter
+import com.example.simpleplayer.application.adapters.main.ItemFilmHolder
 
 class MainViewModel(
     val app: Application,

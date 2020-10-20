@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.simpleplayer.App
 import com.example.simpleplayer.di.scopes.MainViewModelScope
 import com.example.simpleplayer.interactor.interfaces.MainInteractor
-import com.example.simpleplayer.ui.main.MainFactory
+import com.example.simpleplayer.application.ui.main.MainFactory
 import dagger.Module
 import dagger.Provides
 

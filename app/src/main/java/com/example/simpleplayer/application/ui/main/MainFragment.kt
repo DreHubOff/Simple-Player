@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.main
+package com.example.simpleplayer.application.ui.main
 
 import android.content.Context
 import android.content.pm.ActivityInfo
@@ -11,9 +11,8 @@ import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
-import com.example.simpleplayer.MainActivity
 import com.example.simpleplayer.R
-import com.example.simpleplayer.ui.film.PlayerActivity
+import com.example.simpleplayer.application.ui.film.PlayerActivity
 import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
 

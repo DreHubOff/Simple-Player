@@ -1,11 +1,8 @@
-package com.example.simpleplayer
+package com.example.simpleplayer.application.ui.main
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.PersistableBundle
-import android.view.Window
-import android.view.WindowManager
-import com.example.simpleplayer.ui.main.MainFragment
+import com.example.simpleplayer.R
 
 class MainActivity : AppCompatActivity() {
 

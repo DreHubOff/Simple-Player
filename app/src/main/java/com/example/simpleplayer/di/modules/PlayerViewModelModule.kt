@@ -4,7 +4,7 @@ import android.content.Context
 import com.example.simpleplayer.App
 import com.example.simpleplayer.di.scopes.PlayerViewModelScope
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
-import com.example.simpleplayer.ui.film.PlayerFactory
+import com.example.simpleplayer.application.ui.film.PlayerFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
 import dagger.Module

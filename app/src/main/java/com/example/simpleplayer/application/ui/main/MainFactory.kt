@@ -1,4 +1,4 @@
-package com.example.simpleplayer.ui.main
+package com.example.simpleplayer.application.ui.main
 
 import android.app.Application
 import androidx.lifecycle.ViewModel

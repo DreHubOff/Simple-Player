@@ -1,22 +1,22 @@
 package com.example.simpleplayer.di.modules
 
-import android.app.Application
+import android.content.Context
+import com.example.simpleplayer.App
 import com.example.simpleplayer.di.scopes.PlayerViewModelScope
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
 import com.example.simpleplayer.ui.film.PlayerFactory
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.tonyodev.fetch2.Fetch
 import dagger.Module
 import dagger.Provides
 
 
-@Module(includes = [FetchModule::class])
-class PlayerViewModelModule(val app: Application) {
+@Module
+class PlayerViewModelModule {
 
     @Provides
-    internal fun providePlayer(): ExoPlayer {
-        return SimpleExoPlayer.Builder(app.applicationContext).build().apply {
+    internal fun providePlayer(context: Context): ExoPlayer {
+        return SimpleExoPlayer.Builder(context).build().apply {
             setForegroundMode(false)
         }
     }
@@ -25,7 +25,7 @@ class PlayerViewModelModule(val app: Application) {
     @Provides
     internal fun providePlayerFactory(
         filmInteractor: FilmInteractor,
-        fetch: Fetch
+        context: Context
     ) =
-        PlayerFactory(app, filmInteractor, fetch)
+        PlayerFactory(context as App, filmInteractor)
 }

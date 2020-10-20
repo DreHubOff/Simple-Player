@@ -12,11 +12,10 @@ import javax.inject.Inject
 @Suppress("UNCHECKED_CAST")
 class PlayerFactory @Inject constructor(
     val app: Application,
-    val filmInteractor: FilmInteractor,
-    val fetch: Fetch
+    val filmInteractor: FilmInteractor
 ) : ViewModelProvider.AndroidViewModelFactory(app) {
 
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {
-        return PlayerViewModel(app, filmInteractor, fetch) as T
+        return PlayerViewModel(app, filmInteractor) as T
     }
 }

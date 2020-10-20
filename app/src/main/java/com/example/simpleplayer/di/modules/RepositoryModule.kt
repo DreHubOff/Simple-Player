@@ -1,5 +1,6 @@
 package com.example.simpleplayer.di.modules
 
+import android.content.Context
 import com.example.simpleplayer.di.scopes.RepositoryScope
 import com.example.simpleplayer.repository.AppRepository
 import com.example.simpleplayer.repository.AppRepositoryImpl
@@ -9,10 +10,19 @@ import dagger.Module
 import dagger.Provides
 
 @Module
-class RepositoryModule(private val fillDataBase: FilmDataBase) {
+class RepositoryModule() {
     @RepositoryScope
     @Provides
-    internal fun provideRepository(communicator: Communicator): AppRepository {
+    internal fun provideRepository(
+        communicator: Communicator,
+        fillDataBase: FilmDataBase
+    ): AppRepository {
         return AppRepositoryImpl(database = fillDataBase, communicator = communicator)
+    }
+
+    @RepositoryScope
+    @Provides
+    internal fun provideDataBase(context: Context): FilmDataBase {
+        return FilmDataBase.getInstance(context)
     }
 }

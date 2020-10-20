@@ -1,6 +1,7 @@
 package com.example.simpleplayer.di.modules
 
-import android.app.Application
+import android.content.Context
+import com.example.simpleplayer.App
 import com.example.simpleplayer.di.scopes.MainViewModelScope
 import com.example.simpleplayer.interactor.interfaces.MainInteractor
 import com.example.simpleplayer.ui.main.MainFactory
@@ -9,11 +10,11 @@ import dagger.Provides
 
 
 @Module
-class MainViewModelModule(val app: Application) {
+class MainViewModelModule {
 
     @MainViewModelScope
     @Provides
-    internal fun provideMainFactory(mainInteractor: MainInteractor)
-    = MainFactory(app, mainInteractor)
+    internal fun provideMainFactory(mainInteractor: MainInteractor, context: Context) =
+        MainFactory(context as App, mainInteractor)
 
 }

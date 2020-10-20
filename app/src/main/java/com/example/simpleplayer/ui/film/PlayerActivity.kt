@@ -1,12 +1,11 @@
 package com.example.simpleplayer.ui.film
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.content.res.Configuration.*
-import android.graphics.Point
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.lifecycle.Observer
@@ -20,7 +19,6 @@ import kotlinx.android.synthetic.main.player_controller.*
 import kotlinx.android.synthetic.main.player_controller.view.*
 import javax.inject.Inject
 
-@Suppress("DEPRECATION")
 class PlayerActivity : BaseFullscreenActivity() {
 
     @Inject
@@ -28,13 +26,13 @@ class PlayerActivity : BaseFullscreenActivity() {
 
     private lateinit var viewModel: PlayerViewModel
 
-    @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContentView(R.layout.activity_player)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        // Setup fullscreen view
         super.fullscreenView = exoplayer_view_root
 
         // Setup dagger field
@@ -51,22 +49,22 @@ class PlayerActivity : BaseFullscreenActivity() {
         if (savedInstanceState == null) {
             // Setup film in view
             currentFilm?.let {
-                viewModel.cratePlayer(it, true)
+                viewModel.cratePlayer(film = it, firstCreation = true)
                 if (it.offlineViewing) {
                     setupCashingField(CASHING_STATUS_OFFLINE)
                 } else {
                     setupCashingField(CASHING_STATUS_DOWNLOAD)
                 }
             }
-        }else{
+        } else {
             currentFilm?.let {
-                viewModel.cratePlayer(it)
+                viewModel.cratePlayer(film = it, firstCreation = false)
             }
         }
 
         offline_watching_root.setOnClickListener {
             currentFilm?.let {
-                viewModel.updateFilm(it, download_offline_text.text.toString())
+                viewModel.changeOfflineWatchingSate(it)
             }
         }
 
@@ -90,12 +88,24 @@ class PlayerActivity : BaseFullscreenActivity() {
             CASHING_STATUS_DOWNLOAD -> {
                 download_offline_text.text = getString(R.string.download_text)
                 download_offline_img.setImageResource(R.drawable.ic_download)
-                player_controller_root.exo_progress?.setBufferedColor(resources.getColor(R.color.buffered_color))
+
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    player_controller_root.exo_progress?.setBufferedColor(getColor(R.color.buffered_color))
+                } else {
+                    @Suppress("DEPRECATION")
+                    player_controller_root.exo_progress?.setBufferedColor(resources.getColor(R.color.buffered_color))
+                }
             }
+
             CASHING_STATUS_OFFLINE -> {
                 download_offline_text.text = getString(R.string.offline_text)
                 download_offline_img.setImageResource(R.drawable.ic_offline)
-                player_controller_root.exo_progress?.setBufferedColor(resources.getColor(R.color.player_but))
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    player_controller_root.exo_progress?.setBufferedColor(getColor(R.color.player_but))
+                } else {
+                    @Suppress("DEPRECATION")
+                    player_controller_root.exo_progress?.setBufferedColor(resources.getColor(R.color.player_but))
+                }
             }
         }
 
@@ -134,11 +144,11 @@ class PlayerActivity : BaseFullscreenActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
 
-        when (newConfig.orientation){
-            ORIENTATION_LANDSCAPE ->{
+        when (newConfig.orientation) {
+            ORIENTATION_LANDSCAPE -> {
                 fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
             }
-            ORIENTATION_PORTRAIT ->{
+            ORIENTATION_PORTRAIT -> {
                 fullscreen_but.setImageResource(R.drawable.ic_fullscreen)
             }
         }

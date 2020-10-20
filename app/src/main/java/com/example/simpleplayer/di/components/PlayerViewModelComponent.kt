@@ -1,5 +1,6 @@
 package com.example.simpleplayer.di.components
 
+import android.content.Context
 import com.example.simpleplayer.di.modules.FetchModule
 import com.example.simpleplayer.di.modules.PlayerViewModelModule
 import com.example.simpleplayer.di.scopes.PlayerViewModelScope
@@ -9,7 +10,7 @@ import dagger.Component
 
 @PlayerViewModelScope
 @Component(
-    modules = [FetchModule::class, PlayerViewModelModule::class],
+    modules = [PlayerViewModelModule::class],
     dependencies = [InteractorComponent::class]
 )
 interface PlayerViewModelComponent {

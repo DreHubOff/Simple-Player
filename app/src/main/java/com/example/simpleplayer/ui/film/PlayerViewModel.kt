@@ -1,11 +1,14 @@
 package com.example.simpleplayer.ui.film
 
 import android.app.Application
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.os.Build
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.simpleplayer.App
 import com.example.simpleplayer.R
+import com.example.simpleplayer.application.services.DownloadService
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
 import com.example.simpleplayer.model.Film
 import com.example.simpleplayer.utils.changeFilmFileLink
@@ -23,7 +26,6 @@ import java.util.concurrent.TimeUnit
 class PlayerViewModel(
     val app: Application,
     private val mainInteractor: FilmInteractor,
-    private val fetch: Fetch
 ) : AndroidViewModel(app) {
 
 
@@ -43,6 +45,7 @@ class PlayerViewModel(
 
     @JvmOverloads
     fun cratePlayer(film: Film, firstCreation: Boolean = false) {
+        // If firstCreation = true we mast crate new player instance
         if (firstCreation) {
             player = (app as App).playerViewModelComponent.getPlayer()
         }
@@ -56,9 +59,9 @@ class PlayerViewModel(
     }
 
     @Suppress("DEPRECATION")
-    fun updateFilm(film: Film, viewingState: String) {
+    fun changeOfflineWatchingSate(film: Film) {
 
-
+        // Create file link
         val fileLink = "/${film.title.replace(" ", "_")}.mp4"
         val filePath = app.applicationContext.filesDir.path.toString() + fileLink
 
@@ -68,30 +71,17 @@ class PlayerViewModel(
             file.mkdirs()
         }
 
-        if (viewingState == app.getString(R.string.download_text)) {
+        if (!film.offlineViewing) {
 
-            val request = Request(film.filmURL.toString(), filePath)
-            request.priority = Priority.HIGH
-            request.networkType = NetworkType.ALL
-            request.addHeader("clientKey", "SD78DF93_3947&MVNGHE1WONG")
+            val intent = Intent(app.applicationContext, DownloadService::class.java)
 
-
-            fetch.enqueue(request, { updatedRequest: Request ->
-                mainInteractor.updateFilmModel(
-                    film.changeOfflineViewingState(true)
-                        .changeFilmFileLink(updatedRequest.fileUri)
-                )
-                liveData.value = Response.SetViewingText(app.getString(R.string.offline_text))
+            // Check current build sdk version and start
+            // downloading at foreground service
+            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                app.startForegroundService(intent)
+            } else {
+                app.startService(intent)
             }
-            ) {
-                it.throwable?.printStackTrace()
-                liveData.value = Response.Error(app.getString(R.string.download_error))
-            }
-            fetch.addListener(object : MyFetchListener() {
-                override fun onCompleted(download: Download) {
-                    liveData.value = Response.DownloadSuccess
-                }
-            }, true)
 
         } else {
             file.delete()

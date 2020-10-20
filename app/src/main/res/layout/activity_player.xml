@@ -5,6 +5,7 @@
     android:id="@+id/exoplayer_view_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".ui.film.PlayerActivity">
 
     <com.google.android.exoplayer2.ui.PlayerView
@@ -12,13 +13,13 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#000000"
+        app:auto_show="true"
         app:controller_layout_id="@layout/player_controller"
         app:fastforward_increment="10000"
         app:hide_on_touch="true"
-        app:auto_show="true"
-        app:show_timeout="3000"
         app:resize_mode="fit"
         app:rewind_increment="10000"
+        app:show_timeout="3000"
         app:use_controller="true" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

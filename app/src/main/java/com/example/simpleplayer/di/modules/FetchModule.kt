@@ -1,24 +1,24 @@
 package com.example.simpleplayer.di.modules
 
-import android.app.Application
-import com.example.simpleplayer.di.scopes.PlayerViewModelScope
+import android.content.Context
+import com.example.simpleplayer.di.scopes.DownloadingServiceScope
 import com.tonyodev.fetch2.Fetch
 import com.tonyodev.fetch2.FetchConfiguration
 import dagger.Module
 import dagger.Provides
 
 @Module
-class FetchModule(val app: Application) {
+class FetchModule {
 
-    @PlayerViewModelScope
+    @DownloadingServiceScope
     @Provides
-    internal fun provideFetchConfiguration(): FetchConfiguration {
-        return FetchConfiguration.Builder(app.applicationContext)
+    internal fun provideFetchConfiguration(context: Context): FetchConfiguration {
+        return FetchConfiguration.Builder(context)
             .setDownloadConcurrentLimit(5)
             .build()
     }
 
-    @PlayerViewModelScope
+    @DownloadingServiceScope
     @Provides
     internal fun provideFetch(fetchConfig: FetchConfiguration): Fetch {
         return Fetch.getInstance(fetchConfig)

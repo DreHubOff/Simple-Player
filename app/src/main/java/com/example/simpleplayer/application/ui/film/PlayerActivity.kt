@@ -7,17 +7,26 @@ import android.content.res.Configuration
 import android.content.res.Configuration.*
 import android.os.Build
 import android.os.Bundle
-import android.widget.Toast
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
 import com.example.simpleplayer.base.BaseFullscreenActivity
 import com.example.simpleplayer.R
+import com.example.simpleplayer.application.services.DownloadService
 import com.example.simpleplayer.model.Film
+import com.example.simpleplayer.utils.actions.DownloadingAction
+import com.example.simpleplayer.utils.actions.PlayerViewAction
+import com.example.simpleplayer.utils.extensions.showToast
 import kotlinx.android.synthetic.main.activity_player.*
 import kotlinx.android.synthetic.main.player_controller.*
 import kotlinx.android.synthetic.main.player_controller.view.*
 import javax.inject.Inject
+
+
+private const val CASHING_STATUS_DOWNLOAD = 0
+private const val CASHING_STATUS_OFFLINE = 1
+
+private const val SCREEN_ORIENTATION_CHANGING_DELAY = 10000L
 
 class PlayerActivity : BaseFullscreenActivity() {
 
@@ -111,35 +120,48 @@ class PlayerActivity : BaseFullscreenActivity() {
 
     }
 
-    private fun createObserver() = Observer<PlayerViewModel.Response> { response ->
-        when (response) {
-            is PlayerViewModel.Response.Error -> {
-                Toast.makeText(this, response.errorMsg, Toast.LENGTH_SHORT).show()
+    private fun createObserver() = Observer<PlayerViewAction> { action ->
+        when (action) {
+            is PlayerViewAction.ERROR -> {
+                showToast(action.errorMsg)
             }
-            is PlayerViewModel.Response.StartPlayer -> {
+            is PlayerViewAction.START_PLAYER -> {
                 player_film_title.text = currentFilm?.title ?: "Ooops"
-                response.player.apply {
+                action.player.apply {
                     exoplayer_view.player = this
                     prepare()
                     play()
                 }
             }
-            is PlayerViewModel.Response.SetViewingText -> {
-                download_offline_text.text = response.text
-                if (response.text == getString(R.string.offline_text)) {
+            is PlayerViewAction.VIEWING_TEXT_CHANGE -> {
+                download_offline_text.text = action.text
+                if (action.text == getString(R.string.offline_text)) {
                     setupCashingField(CASHING_STATUS_OFFLINE)
-                } else if (response.text == getString(R.string.download_text)) {
+                } else if (action.text == getString(R.string.download_text)) {
                     setupCashingField(CASHING_STATUS_DOWNLOAD)
                 }
             }
-            is PlayerViewModel.Response.DownloadSuccess -> {
-                Toast.makeText(this, R.string.downloading_success, Toast.LENGTH_SHORT).show()
+            is PlayerViewAction.CHANGE_CONFIG -> {
+                requestedOrientation = action.orientationFlag
             }
-            is PlayerViewModel.Response.ChangeScreenOrientation -> {
-                requestedOrientation = response.orientationFlag
+            is PlayerViewAction.START_SERVICE -> {
+                // Check current build sdk version and start
+                // downloading at foreground service
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
+                    startForegroundService(action.intent)
+                } else {
+                    startService(action.intent)
+                }
+                DownloadService.liveData.observe(this, creteDownloadingActionListener())
             }
         }
     }
+
+    private fun creteDownloadingActionListener(): Observer<in DownloadingAction> =
+        Observer<DownloadingAction> { action ->
+
+
+        }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
@@ -167,10 +189,5 @@ class PlayerActivity : BaseFullscreenActivity() {
         }
 
         private var currentFilm: Film? = null
-
-        private const val CASHING_STATUS_DOWNLOAD = 0
-        private const val CASHING_STATUS_OFFLINE = 1
-
-        private const val SCREEN_ORIENTATION_CHANGING_DELAY = 10000L
     }
 }

@@ -9,40 +9,36 @@ import com.example.simpleplayer.interactor.interfaces.MainInteractor
 import com.example.simpleplayer.model.Film
 import com.example.simpleplayer.application.adapters.main.FilmListAdapter
 import com.example.simpleplayer.application.adapters.main.ItemFilmHolder
+import com.example.simpleplayer.utils.actions.MainInteractorAction
+import com.example.simpleplayer.utils.actions.MainViewAction
+import com.example.simpleplayer.utils.extensions.getString
 
 class MainViewModel(
     val app: Application,
     private val mainInteractor: MainInteractor
 ) : AndroidViewModel(app), ItemFilmHolder.ItemFilmClickListener {
 
-    sealed class Response {
-        class Error(val errorMsg: String) : Response()
-        class ActionItemClick(val film: Film):Response()
-    }
-
-    val liveData = MutableLiveData<Response>()
-
+    val liveData = MutableLiveData<MainViewAction>()
 
     val listAdapter = FilmListAdapter(this)
 
-
     override fun onItemFilmClick(film: Film) {
-        liveData.value = Response.ActionItemClick(film)
+        liveData.value = MainViewAction.ITEM_CLICK(film)
     }
 
     @SuppressLint("CheckResult")
     fun setupDataOnView() {
         mainInteractor.getFilmList().subscribe({
             when (it) {
-                is MainInteractor.Response.Success ->
+                is MainInteractorAction.SUCCESS ->
                     listAdapter.update(it.filmList)
-                is MainInteractor.Response.Error ->
-                    liveData.value = Response.Error(app.getString(it.errorMsgId))
+                is MainInteractorAction.ERROR ->
+                    liveData.value = MainViewAction.ERROR(getString(it.errorMsgId))
             }
         }, {
             it.printStackTrace()
             liveData.value =
-                Response.Error(app.getString(R.string.error_interactor_get_data))
+                MainViewAction.ERROR(getString(R.string.error_interactor_get_data))
         })
     }
 }

@@ -8,10 +8,16 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import com.example.simpleplayer.App
 import com.example.simpleplayer.R
+import com.example.simpleplayer.application.services.DOWNLOAD_LINK_EXTRA
 import com.example.simpleplayer.application.services.DownloadService
+import com.example.simpleplayer.application.services.FILE_LINK_EXTRA
 import com.example.simpleplayer.interactor.interfaces.FilmInteractor
 import com.example.simpleplayer.model.Film
+import com.example.simpleplayer.utils.actions.PlayerViewAction
 import com.example.simpleplayer.utils.changeOfflineViewingState
+import com.example.simpleplayer.utils.extensions.getFileSizeMegaBytes
+import com.example.simpleplayer.utils.extensions.getOrNew
+import com.example.simpleplayer.utils.extensions.getString
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import io.reactivex.Single
@@ -29,17 +35,9 @@ class PlayerViewModel(
 
     private lateinit var player: ExoPlayer
 
-    sealed class Response {
-        class Error(val errorMsg: String) : Response()
-        class StartPlayer(val player: ExoPlayer) : Response()
-        class SetViewingText(val text: String) : Response()
-        class ChangeScreenOrientation(val orientationFlag: Int) : Response()
-        object DownloadSuccess : Response()
-    }
-
     private val disposableBag = CompositeDisposable()
 
-    val liveData = MutableLiveData<Response>()
+    val liveData = MutableLiveData<PlayerViewAction>()
 
     @JvmOverloads
     fun cratePlayer(film: Film, firstCreation: Boolean = false) {
@@ -53,38 +51,30 @@ class PlayerViewModel(
                 else film.filmURL
             )
         )
-        liveData.value = Response.StartPlayer(player)
+        liveData.value = PlayerViewAction.START_PLAYER(player)
     }
 
     @Suppress("DEPRECATION")
     fun changeOfflineWatchingSate(film: Film) {
-
         // Create file link
-        val fileLink = "/${film.title.replace(" ", "_")}.mp4"
-        val filePath = app.applicationContext.filesDir.path.toString() + fileLink
+        val fileName = "/${film.title.replace(" ", "_")}.mp4"
+        val filePath = app.applicationContext.filesDir.path.toString() + fileName
 
-        val file = File(filePath)
-        if (!file.exists()) {
-            file.createNewFile()
-            file.mkdirs()
-        }
+        val file = File(filePath).getOrNew()
 
         if (!film.offlineViewing) {
 
             val intent = Intent(app.applicationContext, DownloadService::class.java)
+                .apply {
+                    putExtra(DOWNLOAD_LINK_EXTRA, film.filmURL)
+                    putExtra(FILE_LINK_EXTRA, file.toString())
+                }
 
-            // Check current build sdk version and start
-            // downloading at foreground service
-            if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-                app.startForegroundService(intent)
-            } else {
-                app.startService(intent)
-            }
-
+            liveData.value= PlayerViewAction.START_SERVICE(intent)
         } else {
             file.delete()
             mainInteractor.updateFilmModel(film.changeOfflineViewingState(false))
-            liveData.value = Response.SetViewingText(app.getString(R.string.download_text))
+            liveData.value = PlayerViewAction.VIEWING_TEXT_CHANGE(getString(R.string.download_text))
         }
     }
 
@@ -97,7 +87,7 @@ class PlayerViewModel(
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({
-                liveData.value = Response.ChangeScreenOrientation(it)
+                liveData.value = PlayerViewAction.CHANGE_CONFIG(it)
             }, { /** there will never be an error **/ })
 
         disposableBag.add(timer)

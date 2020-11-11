@@ -41,6 +41,7 @@ class PlayerActivity : BaseFullscreenActivity() {
         setContentView(R.layout.activity_player)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+
         // Setup fullscreen view
         super.fullscreenView = exoplayer_view_root
 

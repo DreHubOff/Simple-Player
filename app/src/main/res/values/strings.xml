@@ -10,7 +10,4 @@
     <string name="ic_play">icon play</string>
     <string name="ic_forward">icon forward</string>
     <string name="slash">/</string>
-    <string name="title_activity_fullscreen">FullscreenActivity</string>
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>

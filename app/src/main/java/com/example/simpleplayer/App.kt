@@ -1,9 +1,11 @@
 package com.example.simpleplayer
 
 import android.app.Application
+import android.content.Intent
 import com.example.simpleplayer.di.components.*
 import com.example.simpleplayer.di.modules.*
 import com.example.simpleplayer.repository.db.FilmDataBase
+
 
 class App : Application() {
 
@@ -54,6 +56,7 @@ class App : Application() {
         downloadingServiceComponent = DaggerDownloadingServiceComponent.builder()
             .appComponent(appComponent)
             .fetchModule(FetchModule())
+            .downloadingNotificationModule(DownloadingNotificationModule())
             .build()
 
     }

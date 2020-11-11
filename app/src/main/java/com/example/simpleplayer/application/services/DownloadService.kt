@@ -3,6 +3,7 @@ package com.example.simpleplayer.application.services
 import android.content.Intent
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
+import com.example.simpleplayer.R
 import com.example.simpleplayer.App
 import com.example.simpleplayer.application.ui.film.MyFetchListener
 import com.example.simpleplayer.utils.actions.DownloadingAction
@@ -16,19 +17,22 @@ const val DOWNLOAD_LINK_EXTRA = "DownloadService.DOWNLOAD_LINK_EXTRA"
 private const val HEADER_KEY = "clientKey"
 private const val HEADER_VALUE = "SD78DF93_3947&MVNGHE1WONG"
 
-class DownloadService : LifecycleService() {
+class DownloadService : LifecycleService(), MyFetchListener {
 
     companion object {
         @JvmStatic
         val liveData = MutableLiveData<DownloadingAction>()
+        private var requestCodes = mutableListOf<Int>()
     }
 
     @Inject
     lateinit var fetch: Fetch
+    lateinit var app: App
 
     override fun onCreate() {
         super.onCreate()
-        (applicationContext as App).downloadingServiceComponent.inject(this)
+        app = (applicationContext as App)
+        app.downloadingServiceComponent.inject(this)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -36,67 +40,77 @@ class DownloadService : LifecycleService() {
 
         var filmUrl: String? = null
         var fileLink: String? = null
+
         intent?.let {
             fileLink = it.getStringExtra(FILE_LINK_EXTRA)
             filmUrl = it.getStringExtra(DOWNLOAD_LINK_EXTRA)
         }
 
-        fetch.enqueue(
-            getFetchRequest(filmUrl ?: "", fileLink ?: ""),
-            {
-//                    updatedRequest: Request ->
-//            mainInteractor.updateFilmModel(
-//                film.changeOfflineViewingState(true)
-//                    .changeFilmFileLink(updatedRequest.fileUri)
-//            )
-//            liveData.value =
-//                PlayerViewModel.Response.SetViewingText(app.getString(R.string.offline_text))
+        if (filmUrl.isNullOrEmpty() || fileLink.isNullOrEmpty()) {
+            reportError()
+        } else {
+            fetch.enqueue(
+                getFetchRequest(filmUrl!!, fileLink!!),
+                { /**Do on Success**/ }
+            ) {
+                reportError(stopService = true)
+                stopSelf(startId)
             }
-        ) {
-            //           liveData.value = PlayerViewModel.Response.Error(app.getString(R.string.download_error))
+            fetch.addListener(this, true)
         }
-
-        fetch.addListener(FetchListener(), true)
-
         return START_STICKY
+    }
+
+    private fun reportError(stopService: Boolean = false) {
+        liveData.postValue(DownloadingAction.ERROR(getString(R.string.download_error)))
+        if (stopService) {
+            stopForeground(true)
+        }
     }
 
     private fun getFetchRequest(downloadingLink: String, fileLink: String): Request {
         return Request(downloadingLink, fileLink).apply {
             networkType = NetworkType.ALL
             autoRetryMaxAttempts = 3
-            priority = Priority.HIGH
+            priority = Priority.NORMAL
             addHeader(HEADER_KEY, HEADER_VALUE)
         }
     }
 
+    //Fetch Listener:
+    override fun onAdded(download: Download) {
+        requestCodes.add(requestCodes.size + 1000)
+        val currentNotification =
+            app.downloadingServiceComponent.getDownloadingNotificator().getNotification(
+                download.file,
+                download.id,
+                requestCodes.last()
+            )
+        startForeground(requestCodes.last(), currentNotification)
+    }
 
+    override fun onStarted(
+        download: Download,
+        downloadBlocks: List<DownloadBlock>,
+        totalBlocks: Int
+    ) {
 
-    private class FetchListener : MyFetchListener() {
+    }
 
-        override fun onStarted(
-            download: Download,
-            downloadBlocks: List<DownloadBlock>,
-            totalBlocks: Int
-        ) {
-            super.onStarted(download, downloadBlocks, totalBlocks)
-        }
+    override fun onProgress(
+        download: Download,
+        etaInMilliSeconds: Long,
+        downloadedBytesPerSecond: Long
+    ) {
 
-        override fun onProgress(
-            download: Download,
-            etaInMilliSeconds: Long,
-            downloadedBytesPerSecond: Long
-        ) {
-            super.onProgress(download, etaInMilliSeconds, downloadedBytesPerSecond)
-        }
+    }
 
-        override fun onCancelled(download: Download) {
-            super.onCancelled(download)
-        }
+    override fun onCancelled(download: Download) {
 
-        override fun onError(download: Download, error: Error, throwable: Throwable?) {
-            super.onError(download, error, throwable)
-        }
+    }
+
+    override fun onError(download: Download, error: Error, throwable: Throwable?) {
+
     }
 
 }

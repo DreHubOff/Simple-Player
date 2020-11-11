@@ -5,7 +5,7 @@ import com.tonyodev.fetch2.Error
 import com.tonyodev.fetch2.FetchListener
 import com.tonyodev.fetch2core.DownloadBlock
 
- abstract class MyFetchListener: FetchListener {
+ interface  MyFetchListener: FetchListener {
      override fun onAdded(download: Download) {
 
      }

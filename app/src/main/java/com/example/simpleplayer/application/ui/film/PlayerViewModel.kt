@@ -25,13 +25,14 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import java.io.File
+import java.lang.Exception
+import java.util.ArrayList
 import java.util.concurrent.TimeUnit
 
 class PlayerViewModel(
     val app: Application,
     private val mainInteractor: FilmInteractor,
 ) : AndroidViewModel(app) {
-
 
     private lateinit var player: ExoPlayer
 
@@ -52,6 +53,8 @@ class PlayerViewModel(
             )
         )
         liveData.value = PlayerViewAction.START_PLAYER(player)
+
+        listOf(1, 2, 3, 4).map { it * 2 }.forEach { print(it) }
     }
 
     @Suppress("DEPRECATION")
@@ -66,7 +69,7 @@ class PlayerViewModel(
 
             val intent = Intent(app.applicationContext, DownloadService::class.java)
                 .apply {
-                    putExtra(DOWNLOAD_LINK_EXTRA, film.filmURL)
+                    putExtra(DOWNLOAD_LINK_EXTRA, film.filmURL.toString())
                     putExtra(FILE_LINK_EXTRA, file.toString())
                 }
 

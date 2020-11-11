@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
 import com.example.simpleplayer.R
 import com.example.simpleplayer.application.ui.film.PlayerActivity
+import com.example.simpleplayer.utils.actions.MainViewAction
 import kotlinx.android.synthetic.main.main_fragment.*
 import javax.inject.Inject
 
@@ -54,16 +55,16 @@ class MainFragment : Fragment(), MainActivity.BeckPressedHelper {
         activity?.let { it.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
     }
 
-    private fun createObserver() = Observer { response: MainViewModel.Response ->
+    private fun createObserver() = Observer { response: MainViewAction ->
         when (response) {
-            is MainViewModel.Response.Error ->
+            is MainViewAction.ERROR ->
                 Toast.makeText(
                     viewModel.app.applicationContext,
                     response.errorMsg,
                     Toast.LENGTH_SHORT
                 ).show()
 
-            is MainViewModel.Response.ActionItemClick ->
+            is MainViewAction.ITEM_CLICK ->
                 activity?.run {
                     PlayerActivity.startPlayerActivity(this, response.film)
                 }

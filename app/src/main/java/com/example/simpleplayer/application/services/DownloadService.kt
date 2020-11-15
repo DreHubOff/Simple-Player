@@ -1,18 +1,23 @@
 package com.example.simpleplayer.application.services
 
+import android.app.NotificationManager
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LifecycleService
 import androidx.lifecycle.MutableLiveData
 import com.example.simpleplayer.R
 import com.example.simpleplayer.App
 import com.example.simpleplayer.application.ui.film.MyFetchListener
+import com.example.simpleplayer.model.Film
 import com.example.simpleplayer.utils.actions.DownloadingAction
+import com.example.simpleplayer.utils.extensions.getOrNew
+import com.example.simpleplayer.utils.extensions.showToast
 import com.tonyodev.fetch2.*
 import com.tonyodev.fetch2core.DownloadBlock
+import java.io.File
 import javax.inject.Inject
 
-const val FILE_LINK_EXTRA = "DownloadService.FILE_LINK_EXTRA"
-const val DOWNLOAD_LINK_EXTRA = "DownloadService.DOWNLOAD_LINK_EXTRA"
+const val FILM_EXTRA = "DownloadService.FILM_EXTRA"
 
 private const val HEADER_KEY = "clientKey"
 private const val HEADER_VALUE = "SD78DF93_3947&MVNGHE1WONG"
@@ -22,11 +27,19 @@ class DownloadService : LifecycleService(), MyFetchListener {
     companion object {
         @JvmStatic
         val liveData = MutableLiveData<DownloadingAction>()
-        private var requestCodes = mutableListOf<Int>()
+        @JvmStatic
+        var started = false
+        private set
     }
+
+    private val teg = this::class.java.canonicalName
 
     @Inject
     lateinit var fetch: Fetch
+
+    @Inject
+    lateinit var notificationManage: NotificationManager
+
     lateinit var app: App
 
     override fun onCreate() {
@@ -37,41 +50,70 @@ class DownloadService : LifecycleService(), MyFetchListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         super.onStartCommand(intent, flags, startId)
+        started = true
 
-        var filmUrl: String? = null
-        var fileLink: String? = null
+        var film: Film? = null
+        intent?.let { film = it.getParcelableExtra(FILM_EXTRA) }
 
-        intent?.let {
-            fileLink = it.getStringExtra(FILE_LINK_EXTRA)
-            filmUrl = it.getStringExtra(DOWNLOAD_LINK_EXTRA)
-        }
-
-        if (filmUrl.isNullOrEmpty() || fileLink.isNullOrEmpty()) {
+        if (film == null) {
             reportError()
         } else {
-            fetch.enqueue(
-                getFetchRequest(filmUrl!!, fileLink!!),
-                { /**Do on Success**/ }
-            ) {
-                reportError(stopService = true)
-                stopSelf(startId)
-            }
-            fetch.addListener(this, true)
+            //startDownload(film!!)
+            startForeground()
         }
+
         return START_STICKY
     }
 
-    private fun reportError(stopService: Boolean = false) {
+    override fun onDestroy() {
+        super.onDestroy()
+        started = false
+    }
+
+    private fun startForeground() {
+        val currentNotification =
+            app.downloadingServiceComponent.getDownloadingNotificator().getNotification(
+                "film!!.title",
+                2222,
+                120
+            )
+        startForeground(211, currentNotification)
+    }
+
+    private fun startDownload(film: Film) {
+        // Create file link
+        val fName = "/${film.title.replace(" ", "_")}.mp4"
+        val fPath = app.applicationContext.filesDir.path.toString() + fName
+
+        val file = File(fPath).getOrNew()
+
+        val request = getFetchRequest(
+            downloadingLink = film.filmURL.toString(),
+            fileLink = fPath
+        )
+        fetch.enqueue(
+            request = request,
+            func = { successRequest ->
+                Log.d(teg, "File: ${successRequest.file} - wos successfully added to the queue")
+            },
+            func2 = { error ->
+                Log.d(teg, error.throwable?.localizedMessage ?: "Fetch request error")
+                reportError()
+            })
+        fetch.addListener(this, true)
+    }
+
+
+    private fun reportError() {
         liveData.postValue(DownloadingAction.ERROR(getString(R.string.download_error)))
-        if (stopService) {
-            stopForeground(true)
-        }
+        stopForeground(true)
+        stopSelf()
     }
 
     private fun getFetchRequest(downloadingLink: String, fileLink: String): Request {
         return Request(downloadingLink, fileLink).apply {
             networkType = NetworkType.ALL
-            autoRetryMaxAttempts = 3
+            autoRetryMaxAttempts = 5
             priority = Priority.NORMAL
             addHeader(HEADER_KEY, HEADER_VALUE)
         }
@@ -79,14 +121,7 @@ class DownloadService : LifecycleService(), MyFetchListener {
 
     //Fetch Listener:
     override fun onAdded(download: Download) {
-        requestCodes.add(requestCodes.size + 1000)
-        val currentNotification =
-            app.downloadingServiceComponent.getDownloadingNotificator().getNotification(
-                download.file,
-                download.id,
-                requestCodes.last()
-            )
-        startForeground(requestCodes.last(), currentNotification)
+
     }
 
     override fun onStarted(
@@ -94,7 +129,7 @@ class DownloadService : LifecycleService(), MyFetchListener {
         downloadBlocks: List<DownloadBlock>,
         totalBlocks: Int
     ) {
-
+        showToast("Downloading started")
     }
 
     override fun onProgress(
@@ -106,7 +141,11 @@ class DownloadService : LifecycleService(), MyFetchListener {
     }
 
     override fun onCancelled(download: Download) {
+        showToast("Downloading cancelled")
+    }
 
+    override fun onCompleted(download: Download) {
+        showToast("Downloading success")
     }
 
     override fun onError(download: Download, error: Error, throwable: Throwable?) {

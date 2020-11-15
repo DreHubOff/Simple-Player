@@ -8,25 +8,27 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 
+import com.example.simpleplayer.R;
 import com.example.simpleplayer.application.ui.main.MainActivity;
 
 public abstract class NotificationAbstract extends ContextWrapper {
+
     @NonNull
-    private Context context;
+    public final NotificationManager nm;
 
     public NotificationAbstract(@NonNull Context context) {
         super(context);
-        this.context = context;
+        this.nm = (NotificationManager) (context.getSystemService(Context.NOTIFICATION_SERVICE));
     }
 
-    protected NotificationManager nm = (NotificationManager) (context.getSystemService(Context.NOTIFICATION_SERVICE));
+
 
     public abstract @NonNull Notification getNotification(@NonNull String downloadingFileName, int id, int requestCode);
 
     protected final @NonNull Notification prepare(
             @NonNull Notification.Builder builder,
             @NonNull String downloadingFileName,
-            @NonNull int requestCode) {
+            int requestCode) {
 
         Intent notificationIntent = new Intent(this, MainActivity.class);
 
@@ -36,7 +38,7 @@ public abstract class NotificationAbstract extends ContextWrapper {
                 notificationIntent,
                 PendingIntent.FLAG_CANCEL_CURRENT
         );
-
+        builder.setSmallIcon(R.drawable.ic_download);
         builder.setContentIntent(contentIntent);
         builder.setContentTitle(downloadingFileName);
         builder.setAutoCancel(false);

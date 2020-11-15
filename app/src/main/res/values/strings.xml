@@ -3,11 +3,15 @@
     <string name="error_interactor_get_data">"Oops!\nCan't get data"</string>
     <string name="offline_text">Offline</string>
     <string name="download_text">Download</string>
-    <string name="download_error">Oops! Can not download</string>
+    <string name="download_error">Oops! Can not download file</string>
+    <string name="download_permission_error">"Ops! Can`t download File\nneed permission"</string>
+
     <string name="downloading">Downloading…</string>
     <string name="downloading_success">Downloading success</string>
     <string name="ic_rewind">icon rewind</string>
     <string name="ic_play">icon play</string>
     <string name="ic_forward">icon forward</string>
     <string name="slash">/</string>
+    <string name="ops">Oops</string>
+    <string name="some_error">Some error</string>
 </resources>

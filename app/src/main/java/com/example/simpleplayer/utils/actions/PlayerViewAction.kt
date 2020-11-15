@@ -4,9 +4,10 @@ import android.content.Intent
 import com.google.android.exoplayer2.ExoPlayer
 
 sealed class PlayerViewAction {
-    class ERROR(val errorMsg: String) : PlayerViewAction()
-    class START_PLAYER(val player: ExoPlayer) : PlayerViewAction()
-    class VIEWING_TEXT_CHANGE(val text: String) : PlayerViewAction()
-    class CHANGE_CONFIG(val orientationFlag: Int) : PlayerViewAction()
-    class START_SERVICE(val intent: Intent) : PlayerViewAction()
+    class Error(val errorMsg: String) : PlayerViewAction()
+    class StartPlayer(val player: ExoPlayer) : PlayerViewAction()
+    class ViewingTextChange(val text: String) : PlayerViewAction()
+    class ChangeConfig(val orientationFlag: Int) : PlayerViewAction()
+    class RequestPermission(val permissions: Array<String>, val requestCode: Int) : PlayerViewAction()
+    object DownloadingStarted : PlayerViewAction()
 }

@@ -2,6 +2,7 @@ package com.example.simpleplayer.di.modules
 
 import android.content.Context
 import android.os.Build
+import com.example.simpleplayer.application.notifications.NotificationAbstract
 import com.example.simpleplayer.application.notifications.download.DownloadingNotificationOreo
 import com.example.simpleplayer.application.notifications.download.DownloadingNotificationPreOreo
 import dagger.Module
@@ -18,4 +19,8 @@ class DownloadingNotificationModule {
         } else {
             DownloadingNotificationOreo(context)
         }
+
+    @Provides
+    fun provideNotificationManager(notification: NotificationAbstract) =
+        notification.nm
 }

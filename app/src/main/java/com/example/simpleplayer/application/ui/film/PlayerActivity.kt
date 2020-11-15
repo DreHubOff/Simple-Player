@@ -3,10 +3,14 @@ package com.example.simpleplayer.application.ui.film
 import android.content.Context
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Configuration.*
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.simpleplayer.App
@@ -29,6 +33,18 @@ private const val CASHING_STATUS_OFFLINE = 1
 private const val SCREEN_ORIENTATION_CHANGING_DELAY = 10000L
 
 class PlayerActivity : BaseFullscreenActivity() {
+
+    companion object {
+        fun startPlayerActivity(context: Context, film: Film) {
+            currentFilm = film
+            val intent = Intent(context, PlayerActivity::class.java)
+            context.startActivity(intent)
+        }
+
+        private var currentFilm: Film? = null
+    }
+
+    private val tag = this::class.java.canonicalName
 
     @Inject
     lateinit var playerFactory: PlayerFactory
@@ -83,6 +99,26 @@ class PlayerActivity : BaseFullscreenActivity() {
         exoplayer_view.setOnTouchListener(delayHideTouchListener)
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSION_STORAGE_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] ==
+                    PackageManager.PERMISSION_GRANTED &&
+                    grantResults[1] ==
+                    PackageManager.PERMISSION_GRANTED
+                ) {
+                    viewModel.startDownload()
+                } else {
+                    showToast(R.string.download_permission_error, Toast.LENGTH_LONG)
+                }
+            }
+        }
+    }
+
     private fun changeScreenOrientation() {
         requestedOrientation = if (resources.configuration.orientation == ORIENTATION_LANDSCAPE) {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
@@ -122,19 +158,22 @@ class PlayerActivity : BaseFullscreenActivity() {
     }
 
     private fun createObserver() = Observer<PlayerViewAction> { action ->
+        @RequiresApi(Build.VERSION_CODES.M)
         when (action) {
-            is PlayerViewAction.ERROR -> {
+            is PlayerViewAction.Error -> {
                 showToast(action.errorMsg)
             }
-            is PlayerViewAction.START_PLAYER -> {
-                player_film_title.text = currentFilm?.title ?: "Ooops"
+
+            is PlayerViewAction.StartPlayer -> {
+                player_film_title.text = currentFilm?.title ?: getString(R.string.ops)
                 action.player.apply {
                     exoplayer_view.player = this
                     prepare()
                     play()
                 }
             }
-            is PlayerViewAction.VIEWING_TEXT_CHANGE -> {
+
+            is PlayerViewAction.ViewingTextChange -> {
                 download_offline_text.text = action.text
                 if (action.text == getString(R.string.offline_text)) {
                     setupCashingField(CASHING_STATUS_OFFLINE)
@@ -142,17 +181,16 @@ class PlayerActivity : BaseFullscreenActivity() {
                     setupCashingField(CASHING_STATUS_DOWNLOAD)
                 }
             }
-            is PlayerViewAction.CHANGE_CONFIG -> {
+
+            is PlayerViewAction.ChangeConfig -> {
                 requestedOrientation = action.orientationFlag
             }
-            is PlayerViewAction.START_SERVICE -> {
-                // Check current build sdk version and start
-                // downloading at foreground service
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.O) {
-                    startForegroundService(action.intent)
-                } else {
-                    startService(action.intent)
-                }
+
+            is PlayerViewAction.RequestPermission -> {
+                requestPermissions(action.permissions, action.requestCode)
+            }
+
+            is PlayerViewAction.DownloadingStarted -> {
                 DownloadService.liveData.observe(this, creteDownloadingActionListener())
             }
         }
@@ -160,13 +198,12 @@ class PlayerActivity : BaseFullscreenActivity() {
 
     private fun creteDownloadingActionListener(): Observer<in DownloadingAction> =
         Observer<DownloadingAction> { action ->
-
-
+            Log.d(tag, "Downloading action: ${action::class.java.canonicalName}")
+            showToast("start downloading")
         }
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-
         when (newConfig.orientation) {
             ORIENTATION_LANDSCAPE -> {
                 fullscreen_but.setImageResource(R.drawable.ic_fullscreen_exit)
@@ -182,13 +219,4 @@ class PlayerActivity : BaseFullscreenActivity() {
         exoplayer_view.player?.pause()
     }
 
-    companion object {
-        fun startPlayerActivity(context: Context, film: Film) {
-            currentFilm = film
-            val intent = Intent(context, PlayerActivity::class.java)
-            context.startActivity(intent)
-        }
-
-        private var currentFilm: Film? = null
-    }
 }
